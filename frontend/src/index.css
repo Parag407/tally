@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+:root {
+  --color-background: #0f172a;
+  --color-foreground: #ffffff;
+  --color-deep-dark: #020617;
+  --color-primary: #3b82f6;
+  --color-secondary: #94a3b8;
+  --color-accent: #06b6d4;
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    @apply font-sans antialiased overflow-x-hidden;
+  }
+
+  * {
+    @apply border-white/10;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl transition-all duration-300;
+  }
+  
+  .glass-card:hover {
+    @apply bg-white/10 -translate-y-1 shadow-2xl shadow-blue-500/10;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold px-6 py-3 rounded-xl 
+           transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent border border-white/20 text-white font-semibold px-6 py-3 rounded-xl 
+           transition-all duration-300 hover:bg-white/5 active:scale-95;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-400;
+  }
+
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-slate-400 hover:text-white hover:bg-white/5;
+  }
+
+  .sidebar-active {
+    @apply bg-blue-600/10 text-blue-400 shadow-[inset_0_0_20px_rgba(59,130,246,0.1)];
+  }
+
+  .input-field {
+    @apply w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-2.5 text-white 
+           focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all outline-none;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
