@@ -1,4 +1,5 @@
 
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowRight, 
@@ -11,6 +12,12 @@ import {
 } from 'lucide-react';
 
 const Home = () => {
+  // Ping backend on load to wake Render's free-tier server from sleep
+  useEffect(() => {
+    const backendUrl = import.meta.env.VITE_API_URL || 'https://tally-1u9p.onrender.com';
+    fetch(`${backendUrl}/health`).catch(() => {}); // silent fail — just waking it up
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#0f172a] text-white">
       {/* Navbar */}
