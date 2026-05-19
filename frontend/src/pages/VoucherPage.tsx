@@ -57,7 +57,7 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
 
   const handleDownloadSample = async () => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://tally-1u9p.onrender.com';
+      const apiUrl = import.meta.env.VITE_API_URL || '';
       const response = await axios.get(`${apiUrl}/api/templates/${type}`, {
         responseType: 'blob',
       });
@@ -112,7 +112,7 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
     formData.append('file', file);
     
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://tally-1u9p.onrender.com';
+      const apiUrl = import.meta.env.VITE_API_URL || '';
       const url = `${apiUrl}/api/${type}/upload?use_ai=${useAI}`;
       const response = await axios.post(url, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -141,7 +141,7 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
     formData.append('file', file);
     
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://tally-1u9p.onrender.com';
+      const apiUrl = import.meta.env.VITE_API_URL || '';
       const url = `${apiUrl}/api/${type}/generate-xml?use_ai=${useAI}&auto_fixed=${autoFixed}`;
       const response = await axios.post(url, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
