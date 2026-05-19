@@ -71,7 +71,7 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
     } catch (err: any) {
       console.error('Failed to download template', err);
       if (err.code === 'ERR_NETWORK' || err.message === 'Network Error' || !err.response) {
-        alert('Backend server is not running on port 8000');
+        alert('Cannot connect to backend server. It may be offline or blocking requests (CORS).');
       } else {
         alert('Failed to download template');
       }
@@ -124,7 +124,7 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
     } catch (err: any) {
       console.error(err);
       if (err.code === 'ERR_NETWORK' || err.message === 'Network Error' || !err.response) {
-        alert('Backend server is not running on port 8000');
+        alert('Cannot connect to backend server. It may be offline or blocking requests (CORS).');
       } else {
         alert('Error processing file: ' + (err.response?.data?.detail?.message || err.response?.data?.detail || err.message));
       }
@@ -158,7 +158,7 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
     } catch (err: any) {
       console.error(err);
       if (err.code === 'ERR_NETWORK' || err.message === 'Network Error' || !err.response) {
-        alert('Backend server is not running on port 8000');
+        alert('Cannot connect to backend server. It may be offline or blocking requests (CORS).');
       } else if (err.response?.data) {
         try {
           const text = await err.response.data.text();
