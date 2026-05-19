@@ -18,7 +18,7 @@ from routes.credit_note_routes import router as credit_note_router
 load_dotenv()
 
 # DEBUG: Verify Env Load
-print("DEBUG: API KEY LOADED FROM ENV:", os.getenv("OPENAI_API_KEY")[:6] + "..." if os.getenv("OPENAI_API_KEY") else "None")
+print("DEBUG: API KEY LOADED FROM ENV:", os.getenv("GROQ_API_KEY")[:6] + "..." if os.getenv("GROQ_API_KEY") else "None")
 
 app = FastAPI(
     title="Tally XML Converter API",
@@ -51,9 +51,9 @@ async def health_check():
 
 @app.get("/test-key")
 async def test_key():
-    key = os.getenv("OPENAI_API_KEY")
-    if key and key != "your-openai-api-key-here" and key.startswith("sk-"):
-        return {"status": "KEY OK", "key_format": "sk-..."}
+    key = os.getenv("GROQ_API_KEY")
+    if key and key.startswith("gsk_"):
+        return {"status": "KEY OK", "key_format": "gsk_..."}
     else:
         return {"status": "KEY MISSING", "reason": "Placeholder or invalid format"}
 

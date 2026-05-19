@@ -138,14 +138,14 @@ async def ai_based_map(columns: List[str], voucher_type: str) -> Dict[str, Optio
     Use OpenAI to intelligently map column names when rule-based fails.
     Falls back to rule-based if API key is not set.
     """
-    api_key = os.getenv("OPENAI_API_KEY", "")
-    if not api_key or api_key == "your-openai-api-key-here":
+    api_key = os.getenv("GROQ_API_KEY", "").strip()
+    if not api_key:
         return rule_based_map(columns, voucher_type)
 
     try:
         from openai import AsyncOpenAI
 
-        client = AsyncOpenAI(api_key=api_key)
+        client = AsyncOpenAI(api_key=api_key, base_url="https://api.groq.com/openai/v1")
         aliases = ALIAS_MAP.get(voucher_type, BANK_ALIASES)
         canonical_names = list(aliases.keys())
 
@@ -160,7 +160,7 @@ Example: {{"date": "Trans Date", "amount": "Amt", "narration": null}}
 Return raw JSON only, no markdown."""
 
         response = await client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="llama3-8b-8192",
             messages=[{"role": "user", "content": prompt}],
             temperature=0,
             max_tokens=500,

@@ -12,18 +12,18 @@ class ChatRequest(BaseModel):
 
 @router.post("/")
 async def chat_with_bot(req: ChatRequest):
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+    api_key = os.getenv("GROQ_API_KEY", "").strip()
     
-    # FAIL-SAFE CHECK: ONLY BLOCK IF COMPLETELY MISSING OR GENERIC PLACEHOLDER
-    if not api_key or api_key == "your-openai-api-key-here":
+    # FAIL-SAFE CHECK: ONLY BLOCK IF COMPLETELY MISSING
+    if not api_key:
         raise HTTPException(
-            status_code=400, 
-            detail="OpenAI API key is missing. Please add your 'sk-...' key to backend/.env"
+            status_code=500, 
+            detail="Groq API key is missing. Please add your 'gsk-...' key to backend/.env"
         )
 
     try:
         from openai import AsyncOpenAI
-        client = AsyncOpenAI(api_key=api_key)
+        client = AsyncOpenAI(api_key=api_key, base_url="https://api.groq.com/openai/v1")
 
         error_context = ""
         if req.errors:
@@ -58,7 +58,7 @@ File Uploaded: {req.fileName}
 """
 
         response = await client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="llama3-8b-8192",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": req.message}
