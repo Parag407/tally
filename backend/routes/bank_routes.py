@@ -32,32 +32,51 @@ async def upload_bank_file(
 
     try:
         contents = await file.read()
+        print(f"DEBUG: File read OK, size={len(contents)} bytes")
         df, columns = parse_file(contents, file.filename)
+        print(f"DEBUG: Parsed OK, rows={len(df)}, columns={columns}")
     except Exception as e:
+        print(f"DEBUG: Parse error: {e}")
         raise HTTPException(status_code=400, detail=f"Failed to parse file: {str(e)}")
 
     # Smart column mapping
-    if use_ai:
-        mapping = await ai_based_map(columns, "bank")
-    else:
-        mapping = rule_based_map(columns, "bank")
+    try:
+        if use_ai:
+            mapping = await ai_based_map(columns, "bank")
+        else:
+            mapping = rule_based_map(columns, "bank")
+        print(f"DEBUG: Mapping OK: {mapping}")
+    except Exception as e:
+        print(f"DEBUG: Mapping error: {e}")
+        raise HTTPException(status_code=500, detail=f"Column mapping failed: {str(e)}")
 
     # Convert to records using mapping
-    records = dataframe_to_records(df, mapping)
+    try:
+        records = dataframe_to_records(df, mapping)
+        print(f"DEBUG: Records built OK, count={len(records)}")
+    except Exception as e:
+        print(f"DEBUG: Records error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to build records: {str(e)}")
 
     # Validate
-    cleaned, errors = validate_bank(records)
+    try:
+        cleaned, errors = validate_bank(records)
+        print(f"DEBUG: Validation OK, errors={len(errors)}")
+    except Exception as e:
+        print(f"DEBUG: Validation error: {e}")
+        raise HTTPException(status_code=500, detail=f"Validation failed: {str(e)}")
 
     # Build preview data (show original values)
+    import pandas as pd
     preview_rows = []
     for idx, row in df.iterrows():
         preview = {"_row": int(idx) + 2}
         for col in columns:
             val = row[col]
-            import pandas as pd
             preview[col] = None if pd.isna(val) else val
         preview_rows.append(preview)
 
+    print(f"DEBUG: Preview built OK, sending response")
     return {
         "filename": file.filename,
         "total_rows": len(df),

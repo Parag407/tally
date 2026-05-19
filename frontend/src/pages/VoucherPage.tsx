@@ -55,11 +55,14 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Always use Vite proxy in dev (empty string), or VITE_API_URL if explicitly set for production
+  const getApiUrl = () => import.meta.env.VITE_API_URL || '';
+
   const handleDownloadSample = async () => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'https://tally-1u9p.onrender.com');
-      const response = await axios.get(`${apiUrl}/api/templates/${type}`, {
+      const response = await axios.get(`${getApiUrl()}/api/templates/${type}`, {
         responseType: 'blob',
+        timeout: 30000,
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -70,10 +73,10 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
       link.remove();
     } catch (err: any) {
       console.error('Failed to download template', err);
-      if (err.code === 'ERR_NETWORK' || err.message === 'Network Error' || !err.response) {
-        alert('Cannot connect to backend server. It may be offline or blocking requests (CORS).');
+      if (err.code === 'ERR_NETWORK' || err.code === 'ECONNABORTED' || err.message === 'Network Error' || !err.response) {
+        alert('Cannot connect to backend server. Make sure the backend is running on port 8000.');
       } else {
-        alert('Failed to download template');
+        alert('Failed to download template: ' + (err.response?.data?.detail || err.message));
       }
     }
   };
@@ -112,10 +115,10 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
     formData.append('file', file);
     
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'https://tally-1u9p.onrender.com');
-      const url = `${apiUrl}/api/${type}/upload?use_ai=${useAI}`;
+      const url = `${getApiUrl()}/api/${type}/upload?use_ai=${useAI}`;
       const response = await axios.post(url, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 60000,
       });
       
       setPreviewData(response.data);
@@ -123,8 +126,8 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
       setErrors(response.data.errors || []);
     } catch (err: any) {
       console.error(err);
-      if (err.code === 'ERR_NETWORK' || err.message === 'Network Error' || !err.response) {
-        alert('Cannot connect to backend server. It may be offline or blocking requests (CORS).');
+      if (err.code === 'ERR_NETWORK' || err.code === 'ECONNABORTED' || err.message === 'Network Error' || !err.response) {
+        alert('Cannot connect to backend server. Make sure the backend is running on port 8000.');
       } else {
         alert('Error processing file: ' + (err.response?.data?.detail?.message || err.response?.data?.detail || err.message));
       }
@@ -141,11 +144,11 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
     formData.append('file', file);
     
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'https://tally-1u9p.onrender.com');
-      const url = `${apiUrl}/api/${type}/generate-xml?use_ai=${useAI}&auto_fixed=${autoFixed}`;
+      const url = `${getApiUrl()}/api/${type}/generate-xml?use_ai=${useAI}&auto_fixed=${autoFixed}`;
       const response = await axios.post(url, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         responseType: 'blob',
+        timeout: 60000,
       });
       
       const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
@@ -157,8 +160,8 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
       link.remove();
     } catch (err: any) {
       console.error(err);
-      if (err.code === 'ERR_NETWORK' || err.message === 'Network Error' || !err.response) {
-        alert('Cannot connect to backend server. It may be offline or blocking requests (CORS).');
+      if (err.code === 'ERR_NETWORK' || err.code === 'ECONNABORTED' || err.message === 'Network Error' || !err.response) {
+        alert('Cannot connect to backend server. Make sure the backend is running on port 8000.');
       } else if (err.response?.data) {
         try {
           const text = await err.response.data.text();

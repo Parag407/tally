@@ -12,10 +12,12 @@ import {
 } from 'lucide-react';
 
 const Home = () => {
-  // Ping backend on load to wake Render's free-tier server from sleep
+  // Ping backend on load to wake Render's free-tier server from sleep (production only)
   useEffect(() => {
-    const backendUrl = import.meta.env.VITE_API_URL || 'https://tally-1u9p.onrender.com';
-    fetch(`${backendUrl}/health`).catch(() => {}); // silent fail — just waking it up
+    const backendUrl = import.meta.env.VITE_API_URL;
+    if (backendUrl) {
+      fetch(`${backendUrl}/health`).catch(() => {}); // silent fail — just waking it up
+    }
   }, []);
 
   return (
