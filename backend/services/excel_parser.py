@@ -17,7 +17,7 @@ def parse_file(file_bytes: bytes, filename: str) -> Tuple[pd.DataFrame, List[str
     ext = filename.rsplit(".", 1)[-1].lower()
 
     if ext == "csv":
-        df = pd.read_csv(io.BytesIO(file_bytes))
+        df = pd.read_csv(io.BytesIO(file_bytes), encoding="utf-8")
     elif ext in ("xlsx", "xls"):
         # openpyxl is generally better for .xlsx
         df = pd.read_excel(io.BytesIO(file_bytes), engine="openpyxl")

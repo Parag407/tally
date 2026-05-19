@@ -67,8 +67,13 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
       document.body.appendChild(link);
       link.click();
       link.remove();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to download template', err);
+      if (err.code === 'ERR_NETWORK' || err.message === 'Network Error' || !err.response) {
+        alert('Backend server is not running on port 8000');
+      } else {
+        alert('Failed to download template');
+      }
     }
   };
 
@@ -116,7 +121,11 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
       setErrors(response.data.errors || []);
     } catch (err: any) {
       console.error(err);
-      alert('Error processing file: ' + (err.response?.data?.detail || err.message));
+      if (err.code === 'ERR_NETWORK' || err.message === 'Network Error' || !err.response) {
+        alert('Backend server is not running on port 8000');
+      } else {
+        alert('Error processing file: ' + (err.response?.data?.detail?.message || err.response?.data?.detail || err.message));
+      }
     } finally {
       setLoading(false);
     }
@@ -144,14 +153,19 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
       link.click();
       link.remove();
     } catch (err: any) {
-      if (err.response?.data) {
-        const text = await err.response.data.text();
+      console.error(err);
+      if (err.code === 'ERR_NETWORK' || err.message === 'Network Error' || !err.response) {
+        alert('Backend server is not running on port 8000');
+      } else if (err.response?.data) {
         try {
+          const text = await err.response.data.text();
           const detail = JSON.parse(text).detail;
           alert(detail.message || "Validation errors found.");
         } catch(e) {
-             alert('Error generating XML');
+          alert('Error generating XML');
         }
+      } else {
+        alert('Error generating XML: ' + err.message);
       }
     } finally {
       setLoading(false);

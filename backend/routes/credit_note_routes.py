@@ -8,7 +8,7 @@ from fastapi.responses import Response
 from services.excel_parser import parse_file, dataframe_to_records
 from services.smart_mapper import rule_based_map, ai_based_map
 from services.validator import validate_credit_note
-from services.xml_generator import generate_credit_note_xml
+from services.xml_generator import generate_credit_note_xml, verify_ledger_names_in_xml, LEDGER_FIELDS_CREDIT_NOTE
 
 router = APIRouter()
 
@@ -102,9 +102,18 @@ async def generate_credit_note_xml_endpoint(
 
     xml_content = generate_credit_note_xml(cleaned)
 
+    # Validate ledger name integrity before returning XML
+    ledger_errors = verify_ledger_names_in_xml(xml_content, cleaned, LEDGER_FIELDS_CREDIT_NOTE)
+    if ledger_errors:
+        raise HTTPException(status_code=422, detail={
+            "message": "Ledger name modified during processing",
+            "errors": ledger_errors,
+            "error_count": len(ledger_errors),
+        })
+
     return Response(
-        content=xml_content,
-        media_type="application/xml",
+        content=xml_content.encode("utf-8"),
+        media_type="application/xml; charset=utf-8",
         headers={
             "Content-Disposition": 'attachment; filename="credit_note_voucher.xml"'
         },

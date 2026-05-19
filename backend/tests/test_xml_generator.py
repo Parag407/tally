@@ -87,7 +87,11 @@ def run_tests():
     sales_records = [
         {
             "date": "2023-12-05 10:30:00", # timestamp should be stripped cleanly
-            "amount": "₹ 1,180.00", # dirty number
+            "taxable_amount": 1000.00,
+            "bill_amount": 1180.00,
+            "tax_amount": 180.00,
+            "cgst_ledger": "CGST",
+            "sgst_ledger": "SGST",
             "gst_rate": "18.0",
             "party_name": "Acme Corp & Co.", # Ampersand checks
             "item_name": "Widgets"
@@ -107,9 +111,11 @@ def run_tests():
     purchase_records = [
         {
             "date": "", # Default date handling
-            "amount": 500,
+            "bill_amount": 500.00,
+            "taxable_amount": 500.00,
+            "tax_amount": 0,
             "gst_rate": 0,
-            "party_name": "", # Should default to Cash Supplier
+            "party_name": "Cash Supplier", 
             "voucher_no": "  ", # Should be omitted since empty
             "narration": "" # Should default to Purchase Entry
         }

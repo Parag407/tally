@@ -8,7 +8,7 @@ from fastapi.responses import Response
 from services.excel_parser import parse_file, dataframe_to_records
 from services.smart_mapper import rule_based_map, ai_based_map
 from services.validator import validate_bank
-from services.xml_generator import generate_bank_xml
+from services.xml_generator import generate_bank_xml, verify_ledger_names_in_xml, LEDGER_FIELDS_BANK
 
 router = APIRouter()
 
@@ -109,6 +109,15 @@ async def generate_bank_xml_endpoint(
             })
 
     xml_content = generate_bank_xml(cleaned, bank_name=bank_name)
+
+    # Validate ledger name integrity before returning XML
+    ledger_errors = verify_ledger_names_in_xml(xml_content, cleaned, LEDGER_FIELDS_BANK)
+    if ledger_errors:
+        raise HTTPException(status_code=422, detail={
+            "message": "Ledger name modified during processing",
+            "errors": ledger_errors,
+            "error_count": len(ledger_errors),
+        })
 
     return Response(
         content=xml_content,
