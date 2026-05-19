@@ -42,7 +42,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ errors, fileName, onActionTriggered }
     setLoading(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://tally-1u9p.onrender.com';
       const response = await axios.post(`${apiUrl}/api/chat/`, {
         message: userMessage,
         errors: errors || [],
