@@ -55,8 +55,8 @@ const VoucherPage = ({ title, description, type }: VoucherPageProps) => {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Always use Vite proxy in dev (empty string), or VITE_API_URL if explicitly set for production
-  const getApiUrl = () => import.meta.env.VITE_API_URL || '';
+  // Bypass Vite proxy for local dev and connect directly to backend to avoid proxy network errors
+  const getApiUrl = () => import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
   const handleDownloadSample = async () => {
     try {
